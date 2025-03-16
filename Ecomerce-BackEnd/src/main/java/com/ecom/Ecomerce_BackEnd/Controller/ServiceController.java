@@ -57,4 +57,32 @@ public class ServiceController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
+    @PutMapping("/product/{id}")
+    public ResponseEntity<String> updateProduct(@PathVariable int id, @RequestPart Product product, @RequestPart MultipartFile imageFile) {
+        Product updatedProduct = null;
+        try {
+            updatedProduct = ProductService.addOrUpdateProduct(product, imageFile);
+            return new ResponseEntity<>("Updated", HttpStatus.OK);
+        } catch (IOException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+
+    @DeleteMapping("/product/{id}")
+    public ResponseEntity<String> deleteProduct(@PathVariable int id) {
+        Product product = ProductService.getProductById(id);
+        if (product != null) {
+            ProductService.deleteProduct(id);
+            return new ResponseEntity<>("Deleted", HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>("Not Found", HttpStatus.NOT_FOUND);
+        }
+    }
+    @GetMapping("/product/search")
+    public ResponseEntity<List<Product>> searchProducts(@RequestParam String keyword) {
+        List<Product> products = ProductService.searchProducts(keyword);
+        System.out.println("searching with :" + keyword);
+        return new ResponseEntity<>(products, HttpStatus.OK);
+    }
 }
